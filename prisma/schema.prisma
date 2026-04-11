@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  name         String
+  email        String       @unique
+  passwordHash String
+  createdAt    DateTime     @default(now())
+  auditEvents  AuditEvent[]
+}
+
+model Patient {
+  id           Int                 @id @default(autoincrement())
+  fullName     String
+  dateOfBirth  DateTime
+  phone        String
+  email        String
+  tags         String
+  createdAt    DateTime            @default(now())
+  appointments Appointment[]
+  intakes      IntakeSubmission[]
+  triage       TriageSuggestion[]
+  followUps    FollowUpTask[]
+}
+
+model Appointment {
+  id           Int                 @id @default(autoincrement())
+  patientId    Int
+  patient      Patient             @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  scheduledFor DateTime
+  visitType    String
+  clinician    String
+  location     String
+  status       String
+  urgency      String
+  createdAt    DateTime            @default(now())
+  intakes      IntakeSubmission[]
+  triage       TriageSuggestion[]
+  followUps    FollowUpTask[]
+}
+
+model IntakeSubmission {
+  id            Int                 @id @default(autoincrement())
+  patientId     Int
+  appointmentId Int
+  patient       Patient             @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment   Appointment         @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  symptoms      String
+  notes         String
+  answers       String
+  createdAt     DateTime            @default(now())
+  triage        TriageSuggestion[]
+}
+
+model TriageSuggestion {
+  id                   Int                 @id @default(autoincrement())
+  patientId            Int
+  appointmentId        Int
+  intakeId             Int
+  patient              Patient             @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment          Appointment         @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  intake               IntakeSubmission    @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+  urgency              String
+  summary              String
+  reasoningSnippet     String
+  confidence           Float
+  sourceRefs           String
+  reviewStatus         String
+  missingInfoChecklist String
+  followUpQuestions    String
+  visitPrepChecklist   String
+  clinicianSummary     String?
+  clinicianNote        String?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  followUps            FollowUpTask[]
+}
+
+model FollowUpTask {
+  id            Int              @id @default(autoincrement())
+  patientId     Int
+  appointmentId Int
+  triageId      Int
+  patient       Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment   Appointment      @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  triage        TriageSuggestion @relation(fields: [triageId], references: [id], onDelete: Cascade)
+  title         String
+  dueDate       DateTime
+  status        String
+  owner         String
+}
+
+model AuditEvent {
+  id         Int      @id @default(autoincrement())
+  entityType String
+  entityId   Int
+  action     String
+  actor      String
+  payload    String
+  createdAt  DateTime @default(now())
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
