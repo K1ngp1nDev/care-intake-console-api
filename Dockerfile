@@ -2,6 +2,7 @@
 
 FROM node:20-alpine AS build
 WORKDIR /app
+RUN apk add --no-cache libc6-compat openssl
 
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -13,6 +14,7 @@ RUN npm run build
 FROM node:20-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+RUN apk add --no-cache libc6-compat openssl
 
 COPY package.json package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules
