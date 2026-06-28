@@ -52,6 +52,7 @@ Interactive Swagger UI: [`/api/docs`](http://localhost:3000/api/docs). Use the *
 | `GET`   | `/followups`               | List follow-up tasks.                                              |
 | `POST`  | `/followups/generate`      | Generate follow-up tasks from a triage suggestion.                 |
 | `GET`   | `/analytics/queue-summary` | Dashboard KPIs, queue distributions, 14-day volume, and due tasks. |
+| `GET`   | `/audit`                   | Synthesized operational activity feed (intakes, triage, follow-ups, appointments). |
 
 ## Important
 
