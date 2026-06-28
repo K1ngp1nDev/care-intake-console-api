@@ -58,8 +58,8 @@ export class AuthService {
       }),
       user: { id, email, name },
       demoHints: {
-        email: 'demo@careintake.test',
-        password: 'password',
+        email: 'demo@example.com',
+        password: 'demo12345',
       },
     };
   }
